@@ -1,3 +1,5 @@
+import logging
+
 from multiprocessing.dummy import Pool as ThreadPool
 import requests  # todo: add in setup
 from tqdm import tqdm  # todo: add in setup
@@ -16,6 +18,9 @@ class ParserDownloader:
 
         # this is used by downloader threads to get a lock over self.custom_file_id
         self.mutex = Lock ( )
+
+        # How to enable logging: https://gist.github.com/wrunk/1241503
+        self.logger = logging.getLogger (__name__)
 
     def verify_cfg_args( self ):
         """
@@ -36,6 +41,8 @@ class ParserDownloader:
         :param reattempt_count: integer (Number of reattempts to make if the request times out)
         :return: boolean (If the url is serviceable, it returns True, otherwise False)
         """
+
+        self.logger.info("test logging")
 
         try:
             response = requests.head (

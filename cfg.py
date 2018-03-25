@@ -1,11 +1,11 @@
 from implementation.app_constants import *
 
 APP_CFG = {
-    # Path of the document which contains urls of images (for simplicity use absolute path)
+    # Path of the document which contains urls of images
     IMAGE_URLS_FILE_PATH : './image_urls.txt',
 
 
-    # Location where downloaded files will get stored (for simplicity use absolute path)
+    # Path where downloaded files will get stored
     IMAGE_SAVE_DIR : './downloaded_images',
 
 
@@ -32,4 +32,8 @@ APP_CFG = {
     #     'https': 'http://10.10.1.10:1080',
     # }
     SYSTEM_PROXY: None,
+
+
+    # Path of error log file of the application
+    ERROR_LOG_FILE_PATH: './error.log',
 }

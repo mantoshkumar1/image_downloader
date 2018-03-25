@@ -1,5 +1,7 @@
-import os, sys
+import logging.config
+logging.config.fileConfig (fname='.logging.conf', disable_existing_loggers=False)
 
+import os, sys
 # exporting PYTHONPATH
 try:
     # Making it easy for python to find the PYTHONPATH
@@ -7,7 +9,12 @@ try:
 except ValueError:
     sys.path.insert(0, os.getcwd())
 
-# importing from application packages
+#import logging
+
+
+
+
+    # importing from application packages
 from implementation.parser_downloader import ParserDownloader
 
 parse_downloader = ParserDownloader()
