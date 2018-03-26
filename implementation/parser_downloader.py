@@ -30,7 +30,7 @@ class ParserDownloader:
         """
         pass
 
-    def is_url_serviceable ( self, url, reattempt_count = cfg[MAX_DOWNLOAD_REATTEMPTS]):
+    def is_url_serviceable ( self, url, reattempt_count = cfg.get(MAX_DOWNLOAD_REATTEMPTS)):
         """
         Verifying whether or not, the url is a downloadable image resource by retrieving meta-information \
         written in response headers, without having to transport the entire content.
@@ -41,10 +41,6 @@ class ParserDownloader:
         :param reattempt_count: integer (Number of reattempts to make if the request times out)
         :return: boolean (If the url is serviceable, it returns True, otherwise False)
         """
-
-        self.logger.critical("critical")
-        self.logger.info("Info")
-
         try:
             response = requests.head (
                 url,
@@ -91,7 +87,7 @@ class ParserDownloader:
         return False
 
 
-    def download_image ( self, url, reattempt_count = cfg[MAX_DOWNLOAD_REATTEMPTS] ):
+    def download_image ( self, url, reattempt_count = cfg.get(MAX_DOWNLOAD_REATTEMPTS) ):
         # Does the url contain a downloadable image resource
         header_res = self.is_url_serviceable (url)
         if not header_res:
