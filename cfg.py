@@ -25,7 +25,7 @@ APP_CFG = {
 
     # If you need to use a proxy, assign a dictionary (e.g; using proxies argument) mapping protocol \
     # or protocol and host to the URL of the proxy to be used on each Request using SYSTEM_PROXY configuration. \
-    # Otherwise configure it to a None.
+    # Otherwise, configure it to a None.
     # For detailed info, please visit http://docs.python-requests.org/en/master/user/advanced/#proxies
     # proxies : {
     #     'http': 'http://10.10.1.10:3128',
@@ -35,5 +35,10 @@ APP_CFG = {
 
 
     # Path of error log file of the application
-    ERROR_LOG_FILE_PATH: './error.log',
+    LOG_DIR: './logs',
+
+    # Set the level of logs which will be collected by this application.
+    # Available options are "NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", and "CRITICAL" (They are case-insensitive).
+    # If an invalid option is provided, then by default application will configure itself with "NOTSET".
+    LOG_LEVEL: "INFO",
 }

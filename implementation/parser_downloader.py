@@ -42,7 +42,8 @@ class ParserDownloader:
         :return: boolean (If the url is serviceable, it returns True, otherwise False)
         """
 
-        self.logger.info("test logging")
+        self.logger.critical("critical")
+        self.logger.info("Info")
 
         try:
             response = requests.head (
