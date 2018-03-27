@@ -1,12 +1,8 @@
 from implementation.app_constants import *
 
 APP_CFG = {
-    # Path of the document which contains urls of images
-    IMAGE_URLS_FILE_PATH : './image_urls.txt',
-
-
     # Path where downloaded files will get stored
-    IMAGE_SAVE_DIR : './downloaded_images',
+    IMAGE_SAVE_DIR: './downloaded_images',
 
 
     # URL_TIMEOUT parameter specifies Requests to stop waiting for a response after a \
@@ -20,7 +16,7 @@ APP_CFG = {
     # In case of URL_TIMEOUT, MAX_DOWNLOAD_REATTEMPTS specifies number of maximum attempts to \
     # download an URL resource. Set it to None, if you prefer not to reattempt. \
     # If "URL_TIMEOUT" is already set to None, application ignores this configuration.
-    MAX_DOWNLOAD_REATTEMPTS : 2,
+    MAX_DOWNLOAD_REATTEMPTS: 2,
 
 
     # If you need to use a proxy, assign a dictionary (e.g; using proxies argument) mapping protocol \

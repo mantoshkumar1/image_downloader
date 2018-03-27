@@ -1,5 +1,4 @@
 # Defines Application constants
-IMAGE_URLS_FILE_PATH = 1
 IMAGE_SAVE_DIR = 2
 URL_TIMEOUT = 3
 SYSTEM_PROXY = 4

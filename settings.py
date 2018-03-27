@@ -12,17 +12,17 @@ def set_log_level ( ):
     """
     # Reference: https://docs.python.org/2/howto/logging.html#logging-levels
     std_logging_levels = {
-        "NOTSET": logging.NOTSET, # lowest priority
+        "NOTSET": logging.NOTSET,  # lowest priority
         "DEBUG": logging.DEBUG,
         "INFO": logging.INFO,
         "WARNING": logging.WARNING,
         "ERROR": logging.ERROR,
-        "CRITICAL": logging.CRITICAL, # highest priority
+        "CRITICAL": logging.CRITICAL,  # highest priority
     }
 
     cfg_log_level = cfg.APP_CFG.get ( LOG_LEVEL )
     if not cfg_log_level:
-        print ( "{0}: {1}".format ( "Warning", "LOG_LEVEL is not configured in cfg.py. " + \
+        print ( "{0}: {1}".format ( "Warning", "LOG_LEVEL is not configured in cfg.py. " +
                                     "Logging is configured to INFO level by default." ) )
         cfg_log_level = "INFO"
 
@@ -30,7 +30,7 @@ def set_log_level ( ):
 
     # if an invalid option is configured in cfg, set logger to "INFO"
     if not mapped_log_level:
-        print ( "{0}: {1}".format ( "Warning", "LOG_LEVEL is not configured as specified in cfg.py. " + \
+        print ( "{0}: {1}".format ( "Warning", "LOG_LEVEL is not configured as specified in cfg.py. " +
                                     "Logging is configured to INFO level by default." ) )
 
         cfg_log_level = "INFO"
@@ -73,21 +73,10 @@ def verify_cfg ( ):
     :return:
     """
     from collections import defaultdict
+    import os
 
     error_msg_dict = defaultdict ( lambda: [ ] )
     critical_error_status = False
-
-    # verification of IMAGE_URLS_FILE_PATH
-    url_file_path = cfg.APP_CFG.get ( IMAGE_URLS_FILE_PATH )
-    if not url_file_path:
-        critical_error_status = True
-        error_msg_dict[ "Critical" ].append ( "IMAGE_URLS_FILE_PATH must be configured in cfg.py." )
-
-    # verify image url path exists
-    import os.path
-    if url_file_path and not os.path.isfile ( url_file_path ):
-        critical_error_status = True
-        error_msg_dict[ "Critical" ].append ( "File name provided at IMAGE_URLS_FILE_PATH does not exist on disk." )
 
     # verification of IMAGE_SAVE_DIR
     image_save_dir = cfg.APP_CFG.get ( IMAGE_SAVE_DIR )
@@ -95,6 +84,12 @@ def verify_cfg ( ):
         error_msg_dict[ "Warning" ].append (
             "IMAGE_SAVE_DIR is not configured in cfg.py. Default configuration is activated with ./downloaded_images." )
         cfg.APP_CFG[ IMAGE_SAVE_DIR ] = './downloaded_images'
+
+    try:
+        os.makedirs ( image_save_dir, exist_ok=True )
+    except PermissionError:
+        critical_error_status = True
+        error_msg_dict[ "Critical" ].append ( "User has not permission to use configured IMAGE_SAVE_DIR in cfg.py." )
 
     # verification of URL_TIMEOUT
     try:
@@ -114,7 +109,7 @@ def verify_cfg ( ):
         max_dwld_attempts = cfg.APP_CFG.get ( MAX_DOWNLOAD_REATTEMPTS )
         if max_dwld_attempts is None or max_dwld_attempts < 0:
             error_msg_dict[ "Info" ].append (
-                "By default MAX_DOWNLOAD_REATTEMPTS has been configured to 0, as provided value is " + \
+                "By default MAX_DOWNLOAD_REATTEMPTS has been configured to 0, as provided value is " +
                 "either None or negative or not provided." )
 
             cfg.APP_CFG[ MAX_DOWNLOAD_REATTEMPTS ] = 0
@@ -124,14 +119,14 @@ def verify_cfg ( ):
         sys_proxy = cfg.APP_CFG[ SYSTEM_PROXY ]
         if sys_proxy is not None and type ( sys_proxy ) is not dict:
             error_msg_dict[ "Warning" ].append (
-                "SYSTEM_PROXY should have been a dict. By default configuring it to None. " + \
-                "Connection might fail due to wrong proxy configuartion." )
+                "SYSTEM_PROXY should have been a dict. By default configuring it to None. " +
+                "Connection might fail due to wrong proxy configuration." )
             cfg.APP_CFG[ SYSTEM_PROXY ] = None
 
     except KeyError:
         error_msg_dict[ "Warning" ].append (
-            "SYSTEM_PROXY is not configured in cfg.py. By default application configures it " + \
-            "to None. Connection might fail due to wrong proxy configuartion." )
+            "SYSTEM_PROXY is not configured in cfg.py. By default application configures it " +
+            "to None. Connection might fail due to wrong proxy configuration." )
         cfg.APP_CFG[ SYSTEM_PROXY ] = None
 
     # verification of LOG_DIR
@@ -140,6 +135,12 @@ def verify_cfg ( ):
         error_msg_dict[ "Warning" ].append (
             "LOG_DIR is not configured in cfg.py. Default configuration is activated with ./logs." )
         cfg.APP_CFG[ LOG_DIR ] = './logs'
+
+    try:
+        os.makedirs ( log_dir, exist_ok=True )
+    except PermissionError:
+        critical_error_status = True
+        error_msg_dict[ "Critical" ].append ( "User has not permission to use configured LOG_DIR in cfg.py." )
 
     # verification of LOG_LEVEL
     # This is verified in set_log_level function
@@ -156,11 +157,27 @@ def verify_cfg ( ):
 
 def configure_application ( ):
     """
-    This function configures the application and logging setup and verifies the \
-    user configuration defined in cfg.py.
+    This function configures the application and logging setup and verifies the user configuration defined in cfg.py.
     :return:
     """
     set_pythonpath ( )
     verify_cfg ( )
     configure_logging ( )
     set_log_level ( )
+
+
+def get_cmdline_args ( ):
+    """
+    Takes the file path of plaintext file as an argument which contains image URLs through command line arguments \
+    from user and returns the file descriptor.
+    :return: file descriptor of the plaintext file
+    """
+    import argparse
+    parser = argparse.ArgumentParser ( description='File Parser - Web Image Downloader' )
+    required = parser.add_argument_group ( 'required arguments' )
+    required.add_argument ( '-f', '--file', dest='infile', required=True, metavar="FILE_PATH",
+                            type=argparse.FileType ( 'r' ),
+                            help='Relative/Absolute path to the file that contains urls' )
+
+    args = parser.parse_args ( )
+    return args.infile

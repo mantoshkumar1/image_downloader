@@ -15,8 +15,11 @@ class FileParser:
     Version: 1.0
     Comment:
     """
-    def __init__ ( self ):
+    def __init__ ( self, url_fd ):
         self.logger = logging.getLogger ( __name__ )
+
+        # File descriptor to the file containing urls (provided by user through command line argument)
+        self.url_fd = url_fd
 
         # this queue holds only serviceable urls which are consumed by downloader threads
         # FileParser is the producer of urls in this queue, while Downloader is consumer
@@ -107,14 +110,25 @@ class FileParser:
         Parse the file that contains url per line and put it into a queue if the url is serviceable.
         :return:
         """
-        # It is already verified in verify_cfg function that IMAGE_URLS_FILE_PATH does exist.
-        with open ( cfg.APP_CFG[ IMAGE_URLS_FILE_PATH ] ) as fd:
-            for line_terminated in fd:
-                # removing newline from line_terminated
-                url = line_terminated.rstrip ( '\n' )
 
-                if self.is_url_serviceable ( url ):
-                    self.url_queue.put ( item=url, block=True, timeout=None )
+        for line_terminated in self.url_fd:
+            # removing newline from line_terminated
+            url = line_terminated.rstrip ( '\n' )
+            if self.is_url_serviceable ( url ):
+                self.url_queue.put ( item=url, block=True, timeout=None )
+
+        """
+        line_terminated = self.url_fd.readlines()
+        while(line_terminated):
+            # removing newline from line_terminated
+            url = line_terminated.rstrip ( '\n' )
+            if self.is_url_serviceable ( url ):
+                self.url_queue.put ( item=url, block=True, timeout=None )
+        """
+
+        # closing url file descriptor
+        self.url_fd.close()
 
         # "EXIT" will be used by downloader threads to terminate themselves
-        self.url_queue.put(item="EXIT", block=True, timeout=None)
+        self.url_queue.put ( item="EXIT", block=True, timeout=None )
+

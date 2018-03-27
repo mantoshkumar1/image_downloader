@@ -1,14 +1,17 @@
 #!/usr/bin/python3
 
-from settings import configure_application
+from settings import configure_application, get_cmdline_args
 from implementation.downloader import Downloader
 from implementation.parser import FileParser
 
 # configuring application using defined configurations
 configure_application()
 
+# Asking user from command line argument for plaintext file path
+url_fd = get_cmdline_args()
+
 # starting file parser
-fp = FileParser()
+fp = FileParser(url_fd)
 fp.start_parser_thread()
 
 # starting url downloader threads

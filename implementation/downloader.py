@@ -22,14 +22,14 @@ class Downloader:
         self.logger = logging.getLogger ( __name__ )
 
         # contains only serviceable urls in a queue
-        # FileParser is the producer of urls in this queue, while Downloader is consumer
+        # FileParser is the producer of urls in this queue, while Downloader threads are consumers
         self.url_queue = url_queue
 
         # this will be used, if because of any reason function "get_filename_from_url"
         # could not derive a file name
         self.custom_file_id = 0
 
-        # default image extension in case downloading file is missing (for non-linux systems)
+        # default image extension in case downloading file is missing
         self.default_image_ext = "jfif"
 
         # this is used by downloader threads to get a lock over self.custom_file_id
@@ -174,9 +174,8 @@ class Downloader:
 
     def check_create_dup_download_file_name ( self, file_name ):
         """
-        Checks whether the file already exist or not in IMAGE_SAVE_DIR directory. \
-        If it does not exist, then return the same file_name.
-        If it already exist, then returns a customized file_name for this image.
+        Checks whether the file already exist or not in IMAGE_SAVE_DIR directory. If it does not exist, then return \
+        the same file_name. If it already exist, then returns a customized file_name for this image.
 
         :param file_name: Name of the downloading image file (str)
         :return: unique file_name of the downloading image into IMAGE_SAVE_DIR directory (str)
