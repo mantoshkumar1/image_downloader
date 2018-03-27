@@ -7,10 +7,19 @@ from .app_constants import *
 
 
 class FileParser:
+    """
+    Description: FileParser class contains methods which collectively work together to parse a document. This document contains
+                 image URLs, one per line. FileParser parses the document and put the URLs into a queue which is consumed by
+                 downloader threads.
+
+    Version: 1.0
+    Comment:
+    """
     def __init__ ( self ):
         self.logger = logging.getLogger ( __name__ )
 
         # this queue holds only serviceable urls which are consumed by downloader threads
+        # FileParser is the producer of urls in this queue, while Downloader is consumer
         self.url_queue = queue.Queue ( maxsize=50 )
 
         # file parser thread

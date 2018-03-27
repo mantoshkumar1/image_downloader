@@ -38,7 +38,8 @@ APP_CFG = {
     LOG_DIR: './logs',
 
     # Set the level of logs which will be collected by this application.
-    # Available options are "NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", and "CRITICAL" (Options are case-insensitive).
+    # Available options are "NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", and "CRITICAL".
+    # All the options are case-insensitive.
     # If an invalid option is provided, then by default application will configure itself with "NOTSET".
     LOG_LEVEL: "INFO",
 }

@@ -3,8 +3,7 @@ from setuptools import setup
 setup (
     name='image_downloader',
     version='1.0',
-    # todo: downloaded_images needs to be added here in packages?
-    packages=['', 'app.unittest', 'app.downloader', 'scripts'],
+    packages=[ 'implementation', 'implementation.unittest' ],
     install_requires=["requests", "tqdm"],
     url='https://github.com/mantoshkumar1',
     license='MIT License',

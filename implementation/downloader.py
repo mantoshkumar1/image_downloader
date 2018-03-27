@@ -9,10 +9,20 @@ from .app_constants import *
 
 
 class Downloader:
+    """
+    Description: Downloader class contains methods which collectively work together to download image resources \
+                 from urls and save them into user specified system path. As per its mechanism, it employs four \
+                 threads to concurrently download the resources. These threads (Consumers) pick up urls from the "url_queue" \
+                 which is filled up by FileParser class (Producer).
+
+    Version: 1.0
+    Comment:
+    """
     def __init__ ( self, url_queue ):
         self.logger = logging.getLogger ( __name__ )
 
-        # contains the urls in a queue
+        # contains only serviceable urls in a queue
+        # FileParser is the producer of urls in this queue, while Downloader is consumer
         self.url_queue = url_queue
 
         # this will be used, if because of any reason function "get_filename_from_url"
@@ -26,7 +36,7 @@ class Downloader:
         self.mutex = threading.Lock ( )
 
         # Number of downloader threads
-        self.NUM_THREADS = 4
+        self.NUM_DL_THREADS = 4
 
         # thread_list contains downloader thread instance which are created and \
         # started by create_start_downloader_threads function
@@ -38,7 +48,7 @@ class Downloader:
         Creates the downloader threads
         :return:
         """
-        for _ in range ( self.NUM_THREADS ):
+        for _ in range ( self.NUM_DL_THREADS ):
             dwnld_th_inst = threading.Thread ( target=self.thread_downloader )
             self.dl_thread_list.append ( dwnld_th_inst )
 
@@ -47,15 +57,15 @@ class Downloader:
         Starts the downloader threads
         :return:
         """
-        for i in range ( self.NUM_THREADS ):
+        for i in range ( self.NUM_DL_THREADS ):
             self.dl_thread_list[ i ].start ( )
 
     def wait_for_downloader_threads ( self ):
         """
-        Waits for downloader threads
+        Waits for and releases resources held by downloader threads
         :return:
         """
-        for i in range ( self.NUM_THREADS ):
+        for i in range ( self.NUM_DL_THREADS ):
             self.dl_thread_list[ i ].join ( )
 
         # Last message for user
@@ -71,7 +81,7 @@ class Downloader:
         while (True):
             url = self.url_queue.get ( block=True, timeout=None )
 
-            # exit point of a thread (Use "EXIT" to exit and then put it for other threads to use (and exit)
+            # exit point of a thread (Use "EXIT" to exit and then put it back for other threads to use (and exit)
             if url == "EXIT":
                 self.url_queue.put ( item="EXIT", block=True, timeout=None )
                 break
@@ -80,9 +90,9 @@ class Downloader:
 
     def download_image ( self, url, reattempt_count=cfg.APP_CFG.get ( MAX_DOWNLOAD_REATTEMPTS ) ):
         """
-        todo: write description
-        :param url:
-        :param reattempt_count:
+        This function downloads image resource from web and saves it into IMAGE_SAVE_DIR directory
+        :param url: str
+        :param reattempt_count: int (Number of times an url will attempted to be fetched in case of failure)
         :return:
         """
         # stream=True is set on the request, this avoids reading the content at once into memory for large responses.
@@ -134,10 +144,13 @@ class Downloader:
 
         path = cfg.APP_CFG[ IMAGE_SAVE_DIR ] + self.get_filename_from_url ( url )
 
+        # It is strongly recommended that we open files in binary mode as per requests documentation
+        # Reference: http://docs.python-requests.org/en/master/user/quickstart/
         with open ( path, 'wb' ) as fp:
             # Iterates over the response data. When stream=True is set on the request, this avoids \
             # reading the content at once into memory for large responses. The chunk size is the \
             # number of bytes it should read into memory.
+            # iter_content automatically decodes the gzip and deflate transfer-encodings.
             chunk_size = 1024
             for data_block in tqdm ( response.iter_content ( chunk_size ) ):
                 fp.write ( data_block )
@@ -175,9 +188,9 @@ class Downloader:
 
     def get_filename_from_url ( self, url ):
         """
-        Finds filename from url
+        Finds filename from url. If it is not possible to get a file name from url then it assigns one.
         :param url: string
-        :return: file_name: string (e.g; "/application_image_1.png" or "/tiger_image.png")
+        :return: file_name: string (e.g; "/application_image_1.jfif" or "/tiger_image.jfif")
         """
         # striping rightmost '/' char in url if it exists
         url = url.rstrip ( '/' )
@@ -190,9 +203,8 @@ class Downloader:
         file_name_ext = file_name.rsplit ( '.', 1 )
         file_extension = file_name_ext[ -1 ]
 
-        # http://preservationtutorial.library.cornell.edu/presentation/table7-1.html
-        if file_extension not in (
-        "tif", "tiff", "gif", "jpeg", "jpg", "jif", "jfif", "jp2", "jpx", "j2k", "j2c", "fpx", "pcd", "png"):
+        # Available image file formats: http://preservationtutorial.library.cornell.edu/presentation/table7-1.html
+        if file_extension not in ("tif", "tiff", "gif", "jpeg", "jpg", "jif", "jfif", "jp2", "jpx", "j2k", "j2c", "fpx", "pcd", "png"):
             # assigning default image extension
             file_extension = self.default_image_ext
 
