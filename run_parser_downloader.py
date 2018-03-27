@@ -1,12 +1,20 @@
-from implementation.parser_downloader import ParserDownloader
 from settings import configure_application
+from implementation.downloader import Downloader
+from implementation.parser import FileParser
 
 # configuring application using defined configurations
 configure_application()
 
-parse_downloader = ParserDownloader()
+# starting file parser
+fp = FileParser()
+fp.start_parser_thread()
 
-url = "https://www.elegantthemes.com/blog/wp-content/uploads/2015/02/custom-trackable-short-url-feature.png"
-#url="https://s6t4u3w6.ssl.hwcdn.net/2017/8/514999/mp4/1.mp4"
-#url = "https://34nk/##12.de/pk.html"
-parse_downloader.download_image(url)
+# starting url downloader threads
+url_dl = Downloader(fp.url_queue)
+url_dl.start_downloader_threads()
+
+# waiting for parser thread
+fp.wait_for_parser_thread()
+
+# waiting for downloader threads
+url_dl.wait_for_downloader_threads()

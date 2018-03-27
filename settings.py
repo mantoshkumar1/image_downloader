@@ -12,12 +12,12 @@ def set_log_level ( ):
     """
     # Reference: https://docs.python.org/2/howto/logging.html#logging-levels
     std_logging_levels = {
-        "NOTSET": logging.NOTSET,
+        "NOTSET": logging.NOTSET, # lowest priority
         "DEBUG": logging.DEBUG,
         "INFO": logging.INFO,
         "WARNING": logging.WARNING,
         "ERROR": logging.ERROR,
-        "CRITICAL": logging.CRITICAL,
+        "CRITICAL": logging.CRITICAL, # highest priority
     }
 
     cfg_log_level = cfg.APP_CFG.get ( LOG_LEVEL )
@@ -117,7 +117,6 @@ def verify_cfg ( ):
                 "By default MAX_DOWNLOAD_REATTEMPTS has been configured to 0, as provided value is " + \
                 "either None or negative or not provided." )
 
-            max_dwld_attempts = 0
             cfg.APP_CFG[ MAX_DOWNLOAD_REATTEMPTS ] = 0
 
     # verification of SYSTEM_PROXY
@@ -157,7 +156,8 @@ def verify_cfg ( ):
 
 def configure_application ( ):
     """
-    This function configures the application and logging setup and verifies the provided configuration.
+    This function configures the application and logging setup and verifies the \
+    user configuration defined in cfg.py.
     :return:
     """
     set_pythonpath ( )

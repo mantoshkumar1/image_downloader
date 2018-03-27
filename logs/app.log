@@ -1,0 +1,6 @@
+2018-03-27 02:52:52,715 implementation.parser: INFO For URL: www.google.com - An exception of type MissingSchema occurred. Arguments:
+("Invalid URL 'www.google.com': No schema supplied. Perhaps you meant http://www.google.com?",)
+2018-03-27 02:52:52,716 implementation.parser: INFO For URL: www.mantosh34556.com - An exception of type MissingSchema occurred. Arguments:
+("Invalid URL 'www.mantosh34556.com': No schema supplied. Perhaps you meant http://www.mantosh34556.com?",)
+2018-03-27 02:52:52,723 implementation.parser: INFO For URL: https://34nk/##12.de/pk.html - An exception of type ConnectionError occurred. Arguments:
+(MaxRetryError("HTTPSConnectionPool(host='34nk', port=443): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fa09f9adb00>: Failed to establish a new connection: [Errno -2] Name or service not known',))",),)
