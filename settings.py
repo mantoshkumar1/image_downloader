@@ -1,5 +1,6 @@
-import logging.config
 import logging
+import logging.config
+
 import cfg
 from implementation.app_constants import *
 
@@ -88,8 +89,10 @@ def verify_cfg ( ):
     try:
         os.makedirs ( image_save_dir, exist_ok=True )
     except PermissionError:
-        critical_error_status = True
-        error_msg_dict[ "Critical" ].append ( "User has not permission to use configured IMAGE_SAVE_DIR in cfg.py." )
+        error_msg_dict[ "Critical" ].append (
+            "User has no permission to the configured IMAGE_SAVE_DIR. " +
+            "Default configuration is activated with ./downloaded_images." )
+        cfg.APP_CFG[ IMAGE_SAVE_DIR ] = './downloaded_images'
 
     # verification of URL_TIMEOUT
     try:
@@ -139,8 +142,9 @@ def verify_cfg ( ):
     try:
         os.makedirs ( log_dir, exist_ok=True )
     except PermissionError:
-        critical_error_status = True
-        error_msg_dict[ "Critical" ].append ( "User has not permission to use configured LOG_DIR in cfg.py." )
+        error_msg_dict[ "Critical" ].append (
+            "User has no permission to the configured LOG_DIR. Default configuration is activated with ./logs." )
+        cfg.APP_CFG[ LOG_DIR ] = './logs'
 
     # verification of LOG_LEVEL
     # This is verified in set_log_level function
@@ -150,9 +154,6 @@ def verify_cfg ( ):
         error_msg_list = error_msg_dict[ error_severity ]
         for msg in error_msg_list:
             print ( "{0}: {1}".format ( error_severity, msg ) )
-
-    if critical_error_status:  # exit program
-        raise SystemExit
 
 
 def configure_application ( ):
@@ -176,7 +177,7 @@ def get_cmdline_args ( ):
     parser = argparse.ArgumentParser ( description='File Parser - Web Image Downloader' )
     required = parser.add_argument_group ( 'required arguments' )
     required.add_argument ( '-f', '--file', dest='infile', required=True, metavar="FILE_PATH",
-                            type=argparse.FileType ( 'r' ),
+                            type=argparse.FileType ( 'rb' ),
                             help='Relative/Absolute path to the file that contains urls' )
 
     args = parser.parse_args ( )

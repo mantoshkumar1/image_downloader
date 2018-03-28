@@ -4,7 +4,7 @@ setup (
     name='image_downloader',
     version='1.0',
     packages=[ 'implementation', 'implementation.unittest' ],
-    install_requires=["requests", "tqdm"],
+    install_requires=[ "requests", "tqdm" ],
     url='https://github.com/mantoshkumar1',
     license='MIT License',
     author='Mantosh Kumar',

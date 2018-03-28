@@ -1,8 +1,9 @@
 import logging
 import os
+import threading
+
 import requests
 from tqdm import tqdm
-import threading
 
 import cfg
 from .app_constants import *
@@ -18,6 +19,7 @@ class Downloader:
     Version: 1.0
     Comment:
     """
+
     def __init__ ( self, url_queue ):
         self.logger = logging.getLogger ( __name__ )
 
@@ -203,11 +205,12 @@ class Downloader:
         file_extension = file_name_ext[ -1 ]
 
         # Available image file formats: http://preservationtutorial.library.cornell.edu/presentation/table7-1.html
-        if file_extension not in ("tif", "tiff", "gif", "jpeg", "jpg", "jif", "jfif", "jp2", "jpx", "j2k", "j2c", "fpx", "pcd", "png"):
+        if file_extension not in (
+                "tif", "tiff", "gif", "jpeg", "jpg", "jif", "jfif", "jp2", "jpx", "j2k", "j2c", "fpx", "pcd", "png"):
             # assigning default image extension
             file_extension = self.default_image_ext
 
-        file_name = file_name_ext[0]  + "." + file_extension
+        file_name = file_name_ext[ 0 ] + "." + file_extension
 
         file_name = self.check_create_dup_download_file_name ( file_name )
         return "/" + file_name
