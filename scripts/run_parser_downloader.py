@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 from implementation.downloader import Downloader
 from implementation.parser import FileParser
 from settings import configure_application, get_cmdline_args

@@ -43,18 +43,6 @@ def set_log_level ( ):
     logging.getLogger ( ).setLevel ( mapped_log_level )
 
 
-def set_pythonpath ( ):
-    """
-    This function set the PYTHONPATH for the application.
-    :return:
-    """
-    import sys, os
-    try:
-        sys.path.index ( os.getcwd ( ) )
-    except ValueError:
-        sys.path.insert ( 0, os.getcwd ( ) )
-
-
 def configure_logging ( ):
     """
     Configures logging using predefined default configuration in ".logging.conf"
@@ -162,8 +150,6 @@ def configure_application ( ):
     This function configures the application and logging setup and verifies the user configuration defined in cfg.py.
     :return:
     """
-    set_pythonpath ( )
-
     verify_cfg ( )
 
     configure_logging ( )
