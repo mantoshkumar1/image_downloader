@@ -1,0 +1,20 @@
+# .coveragerc to control coverage.py
+# https://media.readthedocs.org/pdf/coverage/latest/coverage.pdf
+[run]
+branch = True
+concurrency = thread
+
+source = 
+    implementation
+    settings
+    cfg
+omit = 
+    run_parser_downloader
+    #./implementation/unittest/*
+
+[report]
+ignore_errors = True
+
+[html]
+directory = ./documentation/coverage_html_report
+title = Code Coverage Report of File Parser - Web Image Downloader
