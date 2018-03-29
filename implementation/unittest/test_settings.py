@@ -1,6 +1,7 @@
 import unittest
 
 import cfg
+from implementation.app_constants import *
 from settings import configure_application
 from settings import get_cmdline_args
 
@@ -21,7 +22,7 @@ class SettingsTestCase ( unittest.TestCase ):
         Method called after every unittest case
         :return:
         """
-        pass
+        self.helper.delete_dl_logs ( (cfg.APP_CFG[ IMAGE_SAVE_DIR ], cfg.APP_CFG[ LOG_DIR ]) )
 
     def test_setting ( self ):
         """
