@@ -3,7 +3,6 @@ import os
 import threading
 
 import requests
-from tqdm import tqdm
 
 import cfg
 from .app_constants import *
@@ -95,7 +94,7 @@ class Downloader:
         This function downloads image resource from web and saves it into IMAGE_SAVE_DIR directory
         :param url: str
         :param reattempt_count: int (Number of times an url will attempted to be fetched in case of failure)
-        :return:
+        :return: True (If successful download) / False (If download fails)
         """
         # stream=True is set on the request, this avoids reading the content at once into memory for large responses.
         # timeout parameter specifies Requests to stop waiting for a response after a given number of seconds.
@@ -120,10 +119,9 @@ class Downloader:
 
             if not reattempt_count:
                 self.logger.debug ( "URL {} has not been downloaded.".format ( url ) )
-                return
+                return False
 
-            self.download_image ( url, reattempt_count - 1 )
-            return
+            return self.download_image ( url, reattempt_count - 1 )
 
         except (requests.exceptions.ConnectionError,  # connection-related errors
                 requests.exceptions.HTTPError,  # 401 Unauthorized
@@ -137,14 +135,14 @@ class Downloader:
                                                                                                err.args ) )
 
             self.logger.debug ( "URL {} has not been downloaded.".format ( url ) )
-            return
+            return False
 
         if response.status_code != 200:
             self.logger.debug (
                 "For URL: %s - Received status code %s. Reason: %s" % (url, response.status_code, response.reason) )
-            return
+            return False
 
-        path = cfg.APP_CFG[ IMAGE_SAVE_DIR ] + self.get_filename_from_url ( url )
+        path = cfg.APP_CFG[ IMAGE_SAVE_DIR ] + self.get_dl_filename_from_url ( url )
 
         # It is strongly recommended that we open files in binary mode as per requests documentation
         # Reference: http://docs.python-requests.org/en/master/user/quickstart/
@@ -154,12 +152,12 @@ class Downloader:
             # number of bytes it should read into memory.
             # iter_content automatically decodes the gzip and deflate transfer-encodings.
             chunk_size = 1024
-            for data_block in tqdm ( response.iter_content ( chunk_size ) ):
+            for data_block in response.iter_content ( chunk_size ):
                 fp.write ( data_block )
 
-        return
+        return True
 
-    def create_custom_file_name ( self ):
+    def create_custom_dl_file_name ( self ):
         """
         Create a customized name for a downloading image file. It is a thread safe function.
         :return: str
@@ -171,37 +169,37 @@ class Downloader:
 
         self.mutex.release ( )
 
-        custom_file_name = "application_image_" + str ( curr_file_id ) + "." + self.default_image_ext
-        return custom_file_name
+        custom_dl_file_name = "application_image_" + str ( curr_file_id ) + "." + self.default_image_ext
+        return custom_dl_file_name
 
-    def check_create_dup_download_file_name ( self, file_name ):
+    def check_create_dup_dl_file_name ( self, dl_file_name ):
         """
-        Checks whether the file already exist or not in IMAGE_SAVE_DIR directory. If it does not exist, then return \
-        the same file_name. If it already exist, then returns a customized file_name for this image.
+        Checks whether the download file already exist or not in IMAGE_SAVE_DIR directory. If it does not exist, then return \
+        the same dl_file_name. If it already exist, then returns a customized dl_file_name for this image.
 
-        :param file_name: Name of the downloading image file (str)
+        :param dl_file_name: Name of the downloading image file (str)
         :return: unique file_name of the downloading image into IMAGE_SAVE_DIR directory (str)
         """
-        file_path = cfg.APP_CFG[ IMAGE_SAVE_DIR ] + "/" + file_name
-        if not os.path.isfile ( file_path ): return file_name
+        file_path = cfg.APP_CFG[ IMAGE_SAVE_DIR ] + "/" + dl_file_name
+        if not os.path.isfile ( file_path ): return dl_file_name
 
-        return self.create_custom_file_name ( )
+        return self.create_custom_dl_file_name ( )
 
-    def get_filename_from_url ( self, url ):
+    def get_dl_filename_from_url ( self, url ):
         """
-        Finds filename from url. If it is not possible to get a file name from url then it assigns one.
+        Finds download filename from url. If it is not possible to get a file name from url then it assigns one.
         :param url: string
-        :return: file_name: string (e.g; "/application_image_1.jfif" or "/tiger_image.jfif")
+        :return: dl_file_name: string (e.g; "/application_image_1.jfif" or "/tiger_image.jfif")
         """
         # striping rightmost '/' char in url if it exists
         url = url.rstrip ( '/' )
-        file_name = url.split ( "/" )[ -1 ]
+        dl_file_name = url.split ( "/" )[ -1 ]
 
-        if not file_name:
-            file_name = self.create_custom_file_name ( )
+        if not dl_file_name:
+            dl_file_name = self.create_custom_dl_file_name ( )
 
         # web image might lack extension. so verifying and if it lacks ext then assigning one
-        file_name_ext = file_name.rsplit ( '.', 1 )
+        file_name_ext = dl_file_name.rsplit ( '.', 1 )
         file_extension = file_name_ext[ -1 ]
 
         # Available image file formats: http://preservationtutorial.library.cornell.edu/presentation/table7-1.html
@@ -210,7 +208,7 @@ class Downloader:
             # assigning default image extension
             file_extension = self.default_image_ext
 
-        file_name = file_name_ext[ 0 ] + "." + file_extension
+        dl_file_name = file_name_ext[ 0 ] + "." + file_extension
 
-        file_name = self.check_create_dup_download_file_name ( file_name )
-        return "/" + file_name
+        dl_file_name = self.check_create_dup_dl_file_name ( dl_file_name )
+        return "/" + dl_file_name

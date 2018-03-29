@@ -4,6 +4,8 @@ import logging.config
 import cfg
 from implementation.app_constants import *
 
+logger = logging.getLogger ( __name__ )
+
 
 def set_log_level ( ):
     """
@@ -23,16 +25,16 @@ def set_log_level ( ):
 
     cfg_log_level = cfg.APP_CFG.get ( LOG_LEVEL )
     if not cfg_log_level:
-        print ( "{0}: {1}".format ( "Warning", "LOG_LEVEL is not configured in cfg.py. " +
-                                    "Logging is configured to INFO level by default." ) )
+        logger.info ( "{0}: {1}".format ( "Warning", "LOG_LEVEL is not configured in cfg.py. " +
+                                          "Logging is configured to INFO level by default." ) )
         cfg_log_level = "INFO"
 
     mapped_log_level = std_logging_levels.get ( cfg_log_level.upper ( ) )
 
     # if an invalid option is configured in cfg, set logger to "INFO"
     if not mapped_log_level:
-        print ( "{0}: {1}".format ( "Warning", "LOG_LEVEL is not configured as specified in cfg.py. " +
-                                    "Logging is configured to INFO level by default." ) )
+        logger.info ( "{0}: {1}".format ( "Warning", "LOG_LEVEL is not configured as specified in cfg.py. " +
+                                          "Logging is configured to INFO level by default." ) )
 
         cfg_log_level = "INFO"
         mapped_log_level = std_logging_levels[ "INFO" ]
@@ -77,7 +79,6 @@ def verify_cfg ( ):
     import os
 
     error_msg_dict = defaultdict ( lambda: [ ] )
-    critical_error_status = False
 
     # verification of IMAGE_SAVE_DIR
     image_save_dir = cfg.APP_CFG.get ( IMAGE_SAVE_DIR )
@@ -153,7 +154,7 @@ def verify_cfg ( ):
     for error_severity in error_msg_dict:
         error_msg_list = error_msg_dict[ error_severity ]
         for msg in error_msg_list:
-            print ( "{0}: {1}".format ( error_severity, msg ) )
+            logger.info ( "{0}: {1}".format ( error_severity, msg ) )
 
 
 def configure_application ( ):
@@ -162,15 +163,18 @@ def configure_application ( ):
     :return:
     """
     set_pythonpath ( )
+
     verify_cfg ( )
+
     configure_logging ( )
     set_log_level ( )
 
 
-def get_cmdline_args ( ):
+def get_cmdline_args ( test_args=[ ] ):
     """
     Takes the file path of plaintext file as an argument which contains image URLs through command line arguments \
     from user and returns the file descriptor.
+    :param test_args: only used for testing argparse  capabilty to parse command-line arguments
     :return: file descriptor of the plaintext file
     """
     import argparse
@@ -180,5 +184,9 @@ def get_cmdline_args ( ):
                             type=argparse.FileType ( 'rb' ),
                             help='Relative/Absolute path to the file that contains urls' )
 
-    args = parser.parse_args ( )
+    if test_args:
+        args = parser.parse_args ( test_args )
+    else:
+        args = parser.parse_args ( )
+
     return args.infile
