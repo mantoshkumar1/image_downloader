@@ -1,7 +1,9 @@
 import unittest
 
+import cfg
 from settings import configure_application
 from settings import get_cmdline_args
+
 from .helper import Helper
 
 
@@ -12,7 +14,7 @@ class SettingsTestCase ( unittest.TestCase ):
         :return:
         """
         self.helper = Helper ( )
-        self.cfg = self.helper.create_default_cfg ( )
+        self.helper.create_default_cfg ( )
 
     def tearDown ( self ):
         """
@@ -27,12 +29,13 @@ class SettingsTestCase ( unittest.TestCase ):
         Please look into corresponding function configure_application in settings.py.
         :return:
         """
-        self.cfg = self.helper.create_invalid_cfg ( )
+        # it sets the invalid value in cfg.APP_CFG
+        self.helper.create_invalid_cfg ( )
 
         # application enforces default values for cfg.APP_CFG
         configure_application ( )
 
-        self.assertDictEqual ( self.cfg, self.helper.create_default_cfg ( ) )
+        self.assertDictEqual ( cfg.APP_CFG, self.helper.create_default_cfg ( ) )
 
     @staticmethod
     def test_valid_cmdline_args ( ):

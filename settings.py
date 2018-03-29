@@ -49,6 +49,7 @@ def configure_logging ( ):
     :return:
     """
     log_file_path = cfg.APP_CFG[ LOG_DIR ] + "/app.log"
+
     logging.config.fileConfig (
         fname='.logging.conf',
         defaults={'logfilename': log_file_path},
@@ -81,7 +82,9 @@ def verify_cfg ( ):
         error_msg_dict[ "Critical" ].append (
             "User has no permission to the configured IMAGE_SAVE_DIR. " +
             "Default configuration is activated with ./downloaded_images." )
+
         cfg.APP_CFG[ IMAGE_SAVE_DIR ] = './downloaded_images'
+        os.makedirs ( cfg.APP_CFG[ IMAGE_SAVE_DIR ], exist_ok=True )
 
     # verification of URL_TIMEOUT
     try:
@@ -133,7 +136,9 @@ def verify_cfg ( ):
     except PermissionError:
         error_msg_dict[ "Critical" ].append (
             "User has no permission to the configured LOG_DIR. Default configuration is activated with ./logs." )
+
         cfg.APP_CFG[ LOG_DIR ] = './logs'
+        os.makedirs ( cfg.APP_CFG[ LOG_DIR ], exist_ok=True )
 
     # verification of LOG_LEVEL
     # This is verified in set_log_level function

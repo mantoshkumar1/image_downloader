@@ -1,0 +1,2 @@
+By default, the log files get stored in this directory which can be changed as per
+user's requisites through LOG_DIR in cfg.py.

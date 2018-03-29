@@ -5,13 +5,18 @@ plaintext file and downloads all serviceable image URLs, and finally stores them
 
 ## How to install the application software requirements
 <code>$ cd image_downloader</code><br>
-Choose only one of the below option:
+Choose only one of the below option (Read **_setuptools Note_** below):
 * If you want to install and use the required packages:<br>
-<code>$ python setup.py install</code>
+<code>$ sudo python setup.py install</code>
 * Instead, if you don't want to install the required packages, however, still would like to just use them, then execute:<br>
-<code>$ python setup.py develop</code>
+<code>$ sudo python setup.py develop</code>
 
 This application has been developed and tested on Ubuntu 16.04 LTS OS using Python 3.5.2. For other OS platforms, few instructions might need to be adapted.
+
+**setuptools Note**: If _setuptools_ is not installed on your system, please execute these two instructions first, as 
+_setuptools_ package is the prerequisite for _setup.py_ to work:<br>
+<code>$ sudo apt install python-pip</code><br>
+<code>$ sudo pip install setuptools</code>
 
 ## How to run the application
 <code>$ cd image_downloader</code><br>
@@ -107,7 +112,7 @@ serviceable URLs into a FIFO queue. Web Image Downloader has four threads that f
 image resource. If a resource with the same name has already been downloaded priorly in the *IMAGE_SAVE_DIR* directory, then downloader threads
 store the image resource with a new name without any race condition (for renaming). Once File Parser completes its operation, it puts
 **"EXIT"** into the FIFO queue which is subsequently fetched by one of the threads of Web Image Downloader.
-Once a thread of Web Image Downloader fetches **"EXIT"**, it puts **"EXIT"** into the FIFO queue again and exit.
+Once a thread of Web Image Downloader fetches **"EXIT"**, it puts **"EXIT"** into the FIFO queue again and exits.
  
 The used pattern in this application uses some sort of asynchronous communications technique. Among the many advantages of this approach
 is that it deserializes the required operations and allows both tasks (file parsing and downloading) to proceed in parallel.

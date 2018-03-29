@@ -1,0 +1,2 @@
+By default, the downloaded images get stored in this directory which can be changed as per
+user's requisites through IMAGE_SAVE_DIR in cfg.py.
