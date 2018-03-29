@@ -22,7 +22,7 @@ class SettingsTestCase ( unittest.TestCase ):
         Method called after every unittest case
         :return:
         """
-        self.helper.delete_dl_logs ( (cfg.APP_CFG[ IMAGE_SAVE_DIR ], cfg.APP_CFG[ LOG_DIR ]) )
+        pass
 
     def test_setting ( self ):
         """
@@ -35,6 +35,8 @@ class SettingsTestCase ( unittest.TestCase ):
 
         # application enforces default values for cfg.APP_CFG
         configure_application ( )
+
+        self.helper.delete_dl_logs ( (cfg.APP_CFG[ IMAGE_SAVE_DIR ], cfg.APP_CFG[ LOG_DIR ]) )
 
         self.assertDictEqual ( cfg.APP_CFG, self.helper.create_default_cfg ( ) )
 
