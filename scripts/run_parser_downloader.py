@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 from implementation.downloader import Downloader
 from implementation.parser import FileParser
 from settings import configure_application, get_cmdline_args
@@ -23,6 +24,6 @@ fp.wait_for_parser_thread ( )
 # waiting for downloader threads
 url_dl.wait_for_downloader_threads ( )
 
-print ( "----------------------------------------------------" )
-print ( "<<Thank you for using image downloader application>>" )
-print ( "----------------------------------------------------" )
+print ( "----------------------------------------------------------------------" )
+print ( "<<Thank you for using File Parser - Web Image Downloader application>>" )
+print ( "----------------------------------------------------------------------" )

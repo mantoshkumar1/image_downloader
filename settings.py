@@ -168,7 +168,7 @@ def get_cmdline_args ( test_args=[ ] ):
     required = parser.add_argument_group ( 'required arguments' )
     required.add_argument ( '-f', '--file', dest='infile', required=True, metavar="FILE_PATH",
                             type=argparse.FileType ( 'rb' ),
-                            help='Relative/Absolute path to the file that contains urls' )
+                            help='Relative/Absolute path to the URLs containing plaintext file' )
 
     if test_args:
         args = parser.parse_args ( test_args )
